@@ -1,24 +1,15 @@
-// файл: api/openai-proxy.js
-import { Configuration, OpenAIApi } from "openai";
+// api/openai‑proxy.js
+import OpenAI from "openai";
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
 });
-const openai = new OpenAIApi(configuration);
 
 export default async function handler(req, res) {
-  // принимаем только POST
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
   try {
-    // перенаправляем запрос к OpenAI
-    const response = await openai.createChatCompletion(req.body);
-    // возвращаем результат
-    return res.status(200).json(response.data);
-  } catch (err) {
-    // если что-то пошло не так, вернём текст ошибки
-    return res.status(500).json({ error: err.message });
+    const completion = await openai.chat.completions.create(req.body);
+    res.status(200).json(completion);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }
