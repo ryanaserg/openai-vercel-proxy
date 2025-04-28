@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { model, messages } = req.body;
+  const { model, messages, temperature, max_tokens } = req.body;
 
   if (!process.env.OPENAI_API_KEY) {
     return res.status(500).json({ error: "Missing OpenAI API key" });
@@ -14,12 +14,15 @@ export default async function handler(req, res) {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
   });
+
   const openai = new OpenAIApi(configuration);
 
   try {
     const completion = await openai.createChatCompletion({
       model,
       messages,
+      temperature,
+      max_tokens,
     });
 
     res.status(200).json(completion.data);
