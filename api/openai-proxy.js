@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -11,22 +11,20 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Missing OpenAI API key" });
   }
 
-  const configuration = new Configuration({
+  const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  const openai = new OpenAIApi(configuration);
-
   try {
-    const response = await openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       model,
       messages,
       temperature,
       max_tokens,
     });
 
-    if (response?.data) {
-      res.status(200).json(response.data);
+    if (response?.choices && response.choices.length > 0) {
+      res.status(200).json(response.choices[0].message);
     } else {
       res.status(500).json({ error: "Empty response from OpenAI" });
     }
