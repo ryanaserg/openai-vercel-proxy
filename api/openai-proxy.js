@@ -14,7 +14,6 @@ export default async function handler(req, res) {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
   });
-
   const openai = new OpenAIApi(configuration);
 
   try {
@@ -25,7 +24,11 @@ export default async function handler(req, res) {
       max_tokens,
     });
 
-    res.status(200).json(completion.data);
+    if (completion && completion.data) {
+      res.status(200).json(completion.data);
+    } else {
+      res.status(500).json({ error: "Empty response from OpenAI" });
+    }
   } catch (error) {
     console.error("OpenAI API Error:", error.response?.data || error.message);
     res.status(error.response?.status || 500).json({
