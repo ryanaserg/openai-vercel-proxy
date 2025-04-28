@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test OpenAI Proxy</title>
+</head>
+<body>
+  <h1>OpenAI Proxy Test</h1>
+  <pre id="output">Waiting for response…</pre>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('/api/openai-proxy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: 'Привет, мир!' }
+            ]
+          })
+        });
+        const json = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(json, null, 2);
+      } catch (e) {
+        document.getElementById('output').textContent = 'Error: ' + e.message;
+      }
+    })();
+  </script>
+</body>
+</html>
